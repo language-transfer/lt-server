@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import crypto from 'crypto';
 import processIP from "./ip-data.js";
 
 const PORT = 6774;
@@ -34,10 +35,20 @@ app.enable("trust proxy");
 
 app.post("/log", async (req, res) => {
   const ipData = await processIP(req.ip);
+
+  const token = req.body.user_token || null;
+  let tokenHash = null;
+  if (token !== null) {
+    const hashObject = crypto.createHash("sha256");
+    hashObject.update(token);
+    tokenHash = hashObject.digest("base64");
+  }
+
   const allData = {
     ...req.body,
     ...ipData,
     server_time: +new Date(),
+    user_token: tokenHash,
   };
 
   if (!Object.keys(allData).every((field) => PERMITTED_FIELDS.has(field))) {
@@ -45,6 +56,7 @@ app.post("/log", async (req, res) => {
     return;
   }
 
+console.log(allData);
   res.status(200).send();
 });
 
