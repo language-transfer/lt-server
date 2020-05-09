@@ -7,3 +7,11 @@ services:
                         - "443:443"
                 volumes:
                         - ./nginx.conf:/etc/nginx/nginx.conf
+        postgres:
+                image: "postgres:latest"
+                restart: always
+                volumes:
+                        - ./data/postgres:/var/lib/postgresql/data
+                        - ./secrets:/opt/secrets
+                environment:
+                        POSTGRES_PASSWORD_FILE: /opt/secrets/postgres_password
