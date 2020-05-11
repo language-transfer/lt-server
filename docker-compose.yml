@@ -1,17 +1,31 @@
-version: '3'
+version: "3.1"
 services:
-        nginx:
-                image: "nginx:latest"
-                ports:
-                        - "80:80"
-                        - "443:443"
-                volumes:
-                        - ./nginx.conf:/etc/nginx/nginx.conf
-        postgres:
-                image: "postgres:latest"
-                restart: always
-                volumes:
-                        - ./data/postgres:/var/lib/postgresql/data
-                        - ./secrets:/opt/secrets
-                environment:
-                        POSTGRES_PASSWORD_FILE: /opt/secrets/postgres_password
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - ./data/mongo:/data/db
+      - ./secrets:/opt/secrets
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    environment:
+      MONGO_INITDB_DATABASE: lt_logged_data
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /opt/secrets/mongo_root_password
+      MONGO_INITDB_USERNAME: lt_db_user
+      MONGO_INITDB_PASSWORD_FILE: /opt/secrets/mongo_password
+    ports:
+      - 27017:27017
+  metrics:
+    image: metrics
+    restart: always
+    volumes:
+      - ./secrets:/opt/secrets
+    ports:
+      - 6774:6774

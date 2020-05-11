@@ -1,0 +1,1 @@
+We fetch location data from IP2Location LITE data: https://lite.ip2location.com.

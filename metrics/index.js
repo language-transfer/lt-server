@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import crypto from 'crypto';
+import crypto from "crypto";
 import processIP from "./ip-data.js";
 
 const PORT = 6774;
@@ -29,35 +29,78 @@ const PERMITTED_FIELDS = new Set([
   "setting_value",
 ]);
 
-const app = express();
-app.use(bodyParser.json({ limit: BYTE_LIMIT }));
-app.enable("trust proxy");
+import fs from "fs";
+import mongodb from "mongodb";
 
-app.post("/log", async (req, res) => {
-  const ipData = await processIP(req.ip);
+new Promise((done, error) =>
+  fs.readFile("/opt/secrets/mongo_password", (_e, file) => {
+    const mongoPassword = file.toString().trim();
+    const mongoClient = new mongodb.MongoClient(
+      `mongodb://lt_db_user:${
+        mongoPassword /* boy let's hope that's alphanumeric like it's supposed to be */
+      }@mongo/lt_logged_data`,
+      {
+        reconnectTries: 50,
+        reconnectInterval: 5000,
+      }
+    );
 
-  const token = req.body.user_token || null;
-  let tokenHash = null;
-  if (token !== null) {
-    const hashObject = crypto.createHash("sha256");
-    hashObject.update(token);
-    tokenHash = hashObject.digest("base64");
-  }
+    const connect = (retriesLeft) => {
+      console.log("connect", retriesLeft);
+      if (retriesLeft === 0) {
+        error("IT DON'T WORK");
+        return;
+      }
+      mongoClient.connect((e, client) => {
+        if (e) {
+          setTimeout(() => connect(retriesLeft - 1), 1000);
+          return;
+        }
+        done(client);
+      });
+    };
 
-  const allData = {
-    ...req.body,
-    ...ipData,
-    server_time: +new Date(),
-    user_token: tokenHash,
-  };
+    connect(60);
+  })
+)
+  .then((client) => {
+    const db = client.db("lt_logged_data");
+    const collection = db.collection("activity");
 
-  if (!Object.keys(allData).every((field) => PERMITTED_FIELDS.has(field))) {
-    res.status(400).send();
-    return;
-  }
+    return collection;
+  })
+  .then((collection) => {
+    const app = express();
+    app.use(bodyParser.json({ limit: BYTE_LIMIT }));
+    app.enable("trust proxy");
 
-console.log(allData);
-  res.status(200).send();
-});
+    app.post("/log", async (req, res) => {
+      const ipData = await processIP(req.ip);
 
-app.listen(PORT);
+      const token = req.body.user_token || null;
+      let tokenHash = null;
+      if (token !== null) {
+        const hashObject = crypto.createHash("sha256");
+        hashObject.update(token);
+        tokenHash = hashObject.digest("base64");
+      }
+
+      const allData = {
+        ...req.body,
+        ...ipData,
+        server_time: +new Date(),
+        user_token: tokenHash,
+      };
+
+      if (!Object.keys(allData).every((field) => PERMITTED_FIELDS.has(field))) {
+        res.status(400).send();
+        return;
+      }
+
+      console.log(allData);
+      collection.insertOne(allData);
+      res.status(200).send();
+    });
+
+    app.listen(PORT);
+  });
