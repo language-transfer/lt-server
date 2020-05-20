@@ -1,3 +1,8 @@
+# iptables-restore
+# install docker
+
+# as user:
+
 mkdir -p secrets
 
 # generate a password for the mongo database
