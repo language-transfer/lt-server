@@ -8,6 +8,11 @@ services:
     network_mode: host
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot-challenge:/opt/certbot-challenge
+      - /etc/letsencrypt/live/metrics-lt.syntaxblitz.net/fullchain.pem:/opt/metrics.pem
+      - /etc/letsencrypt/live/metrics-lt.syntaxblitz.net/privkey.pem:/opt/metrics-key.pem
+      - /etc/letsencrypt/live/download-lt.syntaxblitz.net/fullchain.pem:/opt/download.pem
+      - /etc/letsencrypt/live/download-lt.syntaxblitz.net/privkey.pem:/opt/download-key.pem
   mongo:
     image: mongo
     restart: always

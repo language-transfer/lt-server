@@ -1,0 +1,2 @@
+26 10 * * * certbot renew
+@reboot cd /root/lt-server && docker-compose up --detach
