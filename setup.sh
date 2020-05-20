@@ -1,7 +1,6 @@
-# iptables-restore
-# install docker
-
-# as user:
+apt-get install -y fail2ban
+apt-get install -y docker.io
+apt-get install -y docker-compose
 
 mkdir -p secrets
 
