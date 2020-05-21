@@ -9,10 +9,10 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./certbot-challenge:/opt/certbot-challenge
-      #del- /etc/letsencrypt/live/metrics-lt.syntaxblitz.net/fullchain.pem:/opt/metrics.pem
-      #del- /etc/letsencrypt/live/metrics-lt.syntaxblitz.net/privkey.pem:/opt/metrics-key.pem
-      #del- /etc/letsencrypt/live/download-lt.syntaxblitz.net/fullchain.pem:/opt/download.pem
-      #del- /etc/letsencrypt/live/download-lt.syntaxblitz.net/privkey.pem:/opt/download-key.pem
+      #del- /etc/letsencrypt/live/metrics.languagetransfer.org/fullchain.pem:/opt/metrics.pem
+      #del- /etc/letsencrypt/live/metrics.languagetransfer.org/privkey.pem:/opt/metrics-key.pem
+      #del- /etc/letsencrypt/live/downloads.languagetransfer.org/fullchain.pem:/opt/downloads.pem
+      #del- /etc/letsencrypt/live/downloads.languagetransfer.org/privkey.pem:/opt/downloads-key.pem
   mongo:
     image: mongo
     restart: always

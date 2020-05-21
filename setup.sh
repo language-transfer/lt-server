@@ -17,8 +17,8 @@ docker-compose up --detach
 
 # certbot
 mkdir -p certbot-challenge
-certbot certonly --webroot -w /root/lt-server/certbot-challenge/ -d metrics-lt.syntaxblitz.net -m lt-certbot@tacosareawesome.com --agree-tos --no-eff-email
-certbot certonly --webroot -w /root/lt-server/certbot-challenge/ -d download-lt.syntaxblitz.net -m lt-certbot@tacosareawesome.com --agree-tos --no-eff-email
+certbot certonly --webroot -w /root/lt-server/certbot-challenge/ -d metrics.languagetransfer.org -m lt-certbot@tacosareawesome.com --agree-tos --no-eff-email
+certbot certonly --webroot -w /root/lt-server/certbot-challenge/ -d downloads.languagetransfer.org -m lt-certbot@tacosareawesome.com --agree-tos --no-eff-email
 
 sed 's/#del//g' -i nginx.conf
 sed 's/#del//g' -i docker-compose.yml
