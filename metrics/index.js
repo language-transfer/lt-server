@@ -27,6 +27,8 @@ const PERMITTED_FIELDS = new Set([
   "lesson",
   "position",
   "setting_value",
+
+  "is_from_google_instrumentation",
 ]);
 
 import fs from "fs";

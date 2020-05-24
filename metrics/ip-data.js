@@ -101,6 +101,30 @@ const getIPObject = (ip) => {
   return as6;
 };
 
+// https://firebase.google.com/docs/test-lab/android/overview#and_mobile_advertising
+const GOOGLE_IP_BLOCKS = [
+  "108.177.6.0/23",
+  "74.125.122.32/29",
+  "216.239.44.24/29",
+  "34.68.194.64/29",
+  "34.69.234.64/29",
+  "34.73.34.72/29",
+  "34.73.178.72/29",
+  "35.192.160.56/29",
+  "35.196.166.80/29",
+  "35.196.169.240/29",
+  "35.203.128.0/28",
+  "35.234.176.160/28",
+  "35.243.2.0/27",
+  "199.192.115.0/30",
+  "199.192.115.8/30",
+  "199.192.115.16/29",
+].map((ip) => new ipAddress.Address4(ip));
+
+const isFromGoogleInstrumentation = (ip) => {
+  return GOOGLE_IP_BLOCKS.some((block) => ip.isInSubnet(block));
+};
+
 const processIP = async (ip) => {
   const ipObject = getIPObject(ip);
   const asNumber = BigInt(ipObject.bigInteger());
@@ -126,6 +150,7 @@ const processIP = async (ip) => {
     ip_hash,
     ip_salt_hash: saltHash,
     ip_country,
+    is_from_google_instrumentation: isFromGoogleInstrumentation(ipObject),
   };
 };
 
