@@ -13,6 +13,8 @@ services:
       #del- /etc/letsencrypt/live/metrics.languagetransfer.org/privkey.pem:/opt/metrics-key.pem
       #del- /etc/letsencrypt/live/downloads.languagetransfer.org/fullchain.pem:/opt/downloads.pem
       #del- /etc/letsencrypt/live/downloads.languagetransfer.org/privkey.pem:/opt/downloads-key.pem
+    logging:
+      driver: none
   mongo:
     image: mongo
     restart: always
@@ -28,6 +30,8 @@ services:
       MONGO_INITDB_PASSWORD_FILE: /opt/secrets/mongo_password
     ports:
       - 127.0.0.1:27017:27017
+    logging:
+      driver: none
   metrics:
     image: metrics
     restart: always
@@ -35,3 +39,5 @@ services:
       - ./secrets:/opt/secrets
     ports:
       - 127.0.0.1:6774:6774
+    logging:
+      driver: none

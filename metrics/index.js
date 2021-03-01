@@ -99,7 +99,6 @@ new Promise((done, error) =>
         return;
       }
 
-      console.log(allData);
       collection.insertOne(allData);
       res.status(200).send();
     });
