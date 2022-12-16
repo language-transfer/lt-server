@@ -1,3 +1,9 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 26 10 * * * certbot renew
 @reboot cd /root/lt-server && docker-compose up --detach
+# * * * * * bash -c 'cd /root/lt-server/queries && bash ./query.sh'
+# stop judging me
+0 * * * * ssh localhost 'cd ~/lt-server/queries && ./query.sh'
 0 0 * * 0 docker-compose restart nginx
+*/5 * * * * cd /root/lt-server/analytics/pipeline && node run_pipeline_scripts_topsorted.js hourly
+7 * * * * cd /root/lt-server/analytics/pipeline && node run_pipeline_scripts_topsorted.js daily

@@ -37,7 +37,39 @@ services:
     restart: always
     volumes:
       - ./secrets:/opt/secrets
+      - ./queries/data:/opt/query-data
     ports:
       - 127.0.0.1:6774:6774
     logging:
       driver: none
+  postgres:
+    image: postgres:15.1
+    restart: always
+    environment:
+      - POSTGRES_USER=lt_db_user
+      # shh
+      - POSTGRES_PASSWORD_FILE=/opt/secrets/mongo_password
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - /mnt/analytics/postgres:/var/lib/postgresql/data
+      - ./secrets:/opt/secrets
+  analytics:
+    image: analytics
+    # restart: always # oops lol
+    volumes:
+      - ./secrets:/opt/secrets
+    environment:
+      - POSTGRES_USER=lt_db_user
+      # shh
+      - POSTGRES_PASSWORD_FILE=/opt/secrets/mongo_password
+  metabase:
+    image: metabase/metabase:latest
+    ports:
+      - 127.0.0.1:3000:3000
+    links:
+      - postgres

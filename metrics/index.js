@@ -103,5 +103,19 @@ new Promise((done, error) =>
       res.status(200).send();
     });
 
+    app.get('/dashboard', async (req, res) => {
+      res.sendFile('./dashboard.html');
+    });
+
+    app.get('/dashboard/ajax/:time', async (req, res) => {
+      if (!['all-time', 'week', 'day', 'three-hours'].includes(req.params[time])) {
+        res.status(400).send();
+        return;
+      }
+      fs.readFile('/opt/query-data/' + req.params[time], (_e, file) => {
+        res.status(200).json(JSON.parse(file));
+      });
+    });
+
     app.listen(PORT);
   });
